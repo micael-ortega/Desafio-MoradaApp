@@ -1,0 +1,356 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "MoradaApp - teste técnico",
+    "description": "Seja bem-vindo ao contrato da API que deve ser construida, siga as instruções citadas no repositório do github e monte o servidor com base no que esta especificado por aqui. Não se esqueça de fazer as correções da documentação relacionadas a vulnerabilidades.\n",
+    "version": "0.0.0"
+  },
+  "paths": {
+    "/user": {
+      "delete": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Deleta um usuário",
+        "description": "O candidato deve criar uma rota capaz de deletar a conta de um usuário usando apenas o token de autenticação fornecido a ele",
+        "operationId": "deleteUser",
+        "responses": {
+          "204": {
+            "description": "Ao enviar este status code, o sistema deve deletar a conta com sucesso"
+          },
+          "401": {
+            "description": "O sistema deve enviar este status code caso o usuário não esteja autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Lê os dados do usuário",
+        "description": "O candidato deve criar uma rota capaz de ler os dados do usuário já autenticado e retornar no body",
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "Ao enviar este status code, o sistema deve retornar os dados do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resGetUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "O sistema deve enviar este status code caso o usuário não esteja autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Atualiza os dados não sensiveis do usuário",
+        "description": "O candidato deve criar uma rota dedicada a atualizar os dados dos usuários",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/patchUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ao enviar este status code, o sistema deve atualizar os dados que o usuário solicitou"
+          },
+          "400": {
+            "description": "O sistema deve enviar este status code caso o usuário envie um formulário com informações erradas, como por exemplo, um nome acima de 120 caracteres. Armazene todas as informações dos erros que o usuário cometeu dentro do array 'message'",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "O sistema deve enviar este status code caso o usuário não esteja autenticado ou se o novo nome já existir",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Cria um usuário",
+        "description": "O candidato deve criar uma rota dedicada a criar novos usuário utilizando os campos de name, email, password e description",
+        "operationId": "postUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ao enviar este status code, o sistema deve criar os dados do usuário e autenticar o mesmo usando um token JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resPostUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "O sistema deve enviar este status code caso o usuário envie um formulário com informações erradas, como por exemplo, uma senha abaixo de 6 caracteres ou um nome acima de 120 caracteres. Armazene todas as informações dos erros que o usuário cometeu dentro do array 'message'",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "O sistema deve enviar este status code caso alguma outra conta já esteja usando o mesmo email ou nome",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Conecta o usuário a sua conta",
+        "description": "O candidato deve criar uma rota dedicada a conectar os usuários a sua conta usando seu email e senha",
+        "operationId": "loginUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/loginUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "O sistema deve enviar este status code caso as credenciais estejam corretas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resLoginUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "O sistema deve enviar este status code caso o usuário envie um formulário com informações erradas, como por exemplo, uma senha abaixo de 6 caracteres ou um email acima de 320 caracteres. Armazene todas as informações dos erros que o usuário cometeu dentro do array 'message'",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "O sistema deve enviar este status code caso as credenciais do usuário estejam erradas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "400": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Bad Request"
+          },
+          "message": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "statusCode": {
+            "type": "number",
+            "example": 400
+          }
+        }
+      },
+      "401": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unauthorized"
+          },
+          "statusCode": {
+            "type": "number",
+            "example": 401
+          }
+        }
+      },
+      "loginUser": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
+          }
+        }
+      },
+      "resLoginUser": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          }
+        }
+      },
+      "patchUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "postUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@email.com"
+          },
+          "description": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
+          }
+        }
+      },
+      "resPostUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@email.com"
+          },
+          "password": {
+            "type": "string"
+          },
+          "accessToken": {
+            "type": "string"
+          }
+        }
+      },
+      "resGetUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "description": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "johndoe@email.com"
+          }
+        }
+      }
+    }
+  }
+}

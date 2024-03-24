@@ -1,0 +1,11 @@
+{
+  "name": "MoradaApp.backend-test",
+  "main": "index.mjs",
+  "scripts": {
+    "start:docs": "node ."
+  },
+  "dependencies": {
+    "express": "^4.18.3",
+    "swagger-ui-express": "^5.0.0"
+  }
+}

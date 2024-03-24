@@ -12,4 +12,6 @@ export class UserController {
     async createUser(@Body() bodyRequest: CreateUserDto){
         return this.userService.createUser(bodyRequest)
     }
+
+    
 }

@@ -7,6 +7,7 @@ import { hash } from 'bcrypt';
 export class UserService {
    async createUser(userDto: CreateUserDto): Promise<CreateUserResponseDto> {
         const response =  new CreateUserResponseDto()
+        
         const token = await hash(userDto.password,10)
         
         response.name = userDto.name

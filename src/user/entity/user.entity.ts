@@ -8,6 +8,7 @@ export class User {
     @Column({
         nullable: false,
         type: 'varchar',
+        length: 120,
     })
     name: string
 
@@ -15,18 +16,21 @@ export class User {
         nullable: false,
         type: 'varchar',
         unique: true,
+        length: 320,
     })
     email: string
 
     @Column({
         nullable: false,
         type: 'varchar',
+        length: 420,
     })
     description: string
 
     @Column({
         nullable: false,
         type: 'char',
+        length: 60,
     })
     password: string
 

@@ -41,12 +41,14 @@ export class User {
   password: string;
 
   @Column({
+    nullable: false,
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
+    nullable: false,
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })

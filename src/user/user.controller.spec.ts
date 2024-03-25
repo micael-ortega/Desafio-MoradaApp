@@ -11,7 +11,7 @@ describe('UserController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers: [UserService]
+      providers: [UserService],
     }).compile();
 
     controller = module.get<UserController>(UserController);
@@ -20,17 +20,17 @@ describe('UserController', () => {
 
   describe('create user', () => {
     it('must return contract defined response', async () => {
-      const payload = new CreateUserDto()
-      payload.name = "micael"
-      payload.email = "micael.braga@mail.com"
-      payload.description = "descricao"
-      payload.password = "123456"
+      const payload = new CreateUserDto();
+      payload.name = 'micael';
+      payload.email = 'micael.braga@mail.com';
+      payload.description = 'descricao';
+      payload.password = '123456';
 
-      const result = new CreateUserResponseDto()
+      const result = new CreateUserResponseDto();
 
       jest.spyOn(service, 'createUser').mockImplementation(async () => result);
 
-      expect(await controller.createUser(payload)).toBe(result)
-    })
-  })
+      expect(await controller.createUser(payload)).toBe(result);
+    });
+  });
 });

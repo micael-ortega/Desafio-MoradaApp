@@ -6,57 +6,100 @@ import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-
+import { UpdateUserDto } from './dto/patchUser.dto';
+import { GetUserDto } from './dto/getUser.dto';
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-        private jwtService: JwtService) { }
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    private jwtService: JwtService,
+  ) {}
 
-    async createUser(userDto: CreateUserDto): Promise<CreateUserResponseDto> {
+  async createUser(userDto: CreateUserDto): Promise<CreateUserResponseDto> {
+    try {
+      const user = new User();
+      const response = new CreateUserResponseDto();
+      const hashPassword = await hash(userDto.password, 10);
 
-        const user = new User()
+      user.name = userDto.name;
+      user.email = userDto.email;
+      user.description = userDto.description;
+      user.password = hashPassword;
 
-        const response = new CreateUserResponseDto()
+      await this.userRepository.save(user);
 
-        const token = await hash(userDto.password, 10)
+      const token = await this.login(user.email, userDto.password);
 
-        user.name = userDto.name
-        user.email = userDto.email
-        user.description = userDto.description
-        user.password = token
+      response.name = userDto.name;
+      response.email = userDto.email;
+      response.description = userDto.description;
+      response.accessToken = token.accessToken;
 
-        await this.userRepository.save(user)
+      return response;
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
+  }
 
-        response.name = userDto.name
-        response.email = userDto.email
-        response.description = userDto.description
-        response.accessToken = token
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ accessToken: string }> {
+    const user = await this.getUserByEmail(email);
 
-        return response
+    if (!password || !this.isPasswordCorrect(password, user.password)) {
+      throw new UnauthorizedException();
     }
 
-    async getUserByEmail(email: string): Promise<User> {
-        return await this.userRepository.findOneBy({ email: email })
+    const payload = { sub: user.id };
+    const token = await this.jwtService.signAsync(payload);
+    return {
+      accessToken: token,
+    };
+  }
+
+  async getUserInfo(token: string): Promise<GetUserDto> {
+    const user = await this.getUserFromToken(token);
+    const response = new GetUserDto();
+    response.name = user.name;
+    response.description = user.description;
+    response.email = user.email;
+    return response;
+  }
+
+  async patchUserInfo(token: string, patchUserDto: UpdateUserDto) {
+    try {
+      const user = await this.getUserFromToken(token);
+      await this.userRepository.update(user.id, patchUserDto);
+    } catch (error) {
+      throw new UnauthorizedException();
     }
+  }
 
-    async login(email: string, password: string): Promise<{ accessToken: string }> {
-        const user = await this.getUserByEmail(email)
+  // Metodo auxiliar para obter usuário a partir do bearer token
+  private async getUserFromToken(token: string): Promise<User> {
+    const decoded = this.jwtService.decode(token);
+    const user = await this.getUserById(decoded['sub']);
 
-        if (!password || !this.isPasswordCorrect(password, user.password)) {
-            throw new UnauthorizedException()
-        }
-        const payload = { sub: user.id };
-        return {
-            accessToken: await this.jwtService.signAsync(payload)
+    return user;
+  }
 
-        }
+  // Metodo auxiliar para obter usuário a partir da Id
+  private async getUserById(id: string): Promise<User> {
+    return await this.userRepository.findOneBy({ id: id });
+  }
 
-    }
+  // Metodo auxiliar para obter usuário a partir do email
+  // Usado para fazer login do usuário através do email
+  private async getUserByEmail(email: string): Promise<User> {
+    return await this.userRepository.findOneBy({ email: email });
+  }
 
-    private isPasswordCorrect(password: string, hash: string): boolean {
-        return compareSync(password, hash)
-    }
+  // Metodo auxiliar para verificar se a senha e o hash armazenado na
+  // database está valido
+  private isPasswordCorrect(password: string, hash: string): boolean {
+    return compareSync(password, hash);
+  }
 }

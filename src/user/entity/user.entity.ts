@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -8,6 +13,7 @@ export class User {
   @Column({
     nullable: false,
     type: 'varchar',
+    unique: true,
     length: 120,
   })
   name: string;
@@ -35,14 +41,14 @@ export class User {
   password: string;
 
   @Column({
-    type: 'timestamp without time zone',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
-  @Column({
-    type: 'timestamp without time zone',
+  @UpdateDateColumn({
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  updateAt: Date;
+  updatedAt: Date;
 }

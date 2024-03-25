@@ -48,7 +48,7 @@ export class UserService {
     password: string,
   ): Promise<{ accessToken: string }> {
     const user = await this.getUserByEmail(email);
-    console.log(user)
+    console.log(user);
     if (!user || !this.isPasswordCorrect(password, user.password)) {
       throw new UnauthorizedException();
     }
@@ -72,18 +72,25 @@ export class UserService {
   async patchUserInfo(token: string, patchUserDto: UpdateUserDto) {
     try {
       const user = await this.getUserFromToken(token);
-      await this.userRepository.update(user.id, patchUserDto);
+      await this.userRepository.update(user.id, {
+        name: patchUserDto.name,
+        description: patchUserDto.description,
+      });
     } catch (error) {
       throw new UnauthorizedException();
     }
   }
 
   // Metodo auxiliar para obter usuário a partir do bearer token
-  private async getUserFromToken(token: string): Promise<User> {
-    const decoded = this.jwtService.decode(token);
-    const user = await this.getUserById(decoded['sub']);
-
-    return user;
+  private async getUserFromToken(authorization: string): Promise<User> {
+    try {
+      const token = authorization.split(' ')[1];
+      const decoded = this.jwtService.decode(token);
+      const user = await this.getUserById(decoded['sub']);
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
   }
 
   // Metodo auxiliar para obter usuário a partir da Id

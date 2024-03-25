@@ -48,8 +48,8 @@ export class UserService {
     password: string,
   ): Promise<{ accessToken: string }> {
     const user = await this.getUserByEmail(email);
-
-    if (!password || !this.isPasswordCorrect(password, user.password)) {
+    console.log(user)
+    if (!user || !this.isPasswordCorrect(password, user.password)) {
       throw new UnauthorizedException();
     }
 

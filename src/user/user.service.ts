@@ -17,24 +17,22 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  async createUser(userDto: CreateUserDto): Promise<CreateUserResponseDto> {
+  async createUser(
+    createUserDto: CreateUserDto,
+  ): Promise<CreateUserResponseDto> {
     try {
-      const user = new User();
+      const plainPassword = createUserDto.password;
+      createUserDto.password = await hash(createUserDto.password, 10);
+
+      await this.userRepository.save(createUserDto);
+
       const response = new CreateUserResponseDto();
-      const hashPassword = await hash(userDto.password, 10);
 
-      user.name = userDto.name;
-      user.email = userDto.email;
-      user.description = userDto.description;
-      user.password = hashPassword;
+      const token = await this.login(createUserDto.email, plainPassword);
 
-      await this.userRepository.save(user);
-
-      const token = await this.login(user.email, userDto.password);
-
-      response.name = userDto.name;
-      response.email = userDto.email;
-      response.description = userDto.description;
+      response.name = createUserDto.name;
+      response.email = createUserDto.email;
+      response.description = createUserDto.description;
       response.accessToken = token.accessToken;
 
       return response;
@@ -60,8 +58,8 @@ export class UserService {
     };
   }
 
-  async getUserInfo(token: string): Promise<GetUserDto> {
-    const user = await this.getUserFromToken(token);
+  async getUserInfo(authorizationHeader: string): Promise<GetUserDto> {
+    const user = await this.getUserFromToken(authorizationHeader);
     const response = new GetUserDto();
     response.name = user.name;
     response.description = user.description;
@@ -69,9 +67,12 @@ export class UserService {
     return response;
   }
 
-  async patchUserInfo(token: string, patchUserDto: UpdateUserDto) {
+  async patchUserInfo(
+    authorizationHeader: string,
+    patchUserDto: UpdateUserDto,
+  ) {
     try {
-      const user = await this.getUserFromToken(token);
+      const user = await this.getUserFromToken(authorizationHeader);
       await this.userRepository.update(user.id, {
         name: patchUserDto.name,
         description: patchUserDto.description,
@@ -81,10 +82,19 @@ export class UserService {
     }
   }
 
-  // Metodo auxiliar para obter usuário a partir do bearer token
-  private async getUserFromToken(authorization: string): Promise<User> {
+  async deleteUser(authorizationHeader: string) {
     try {
-      const token = authorization.split(' ')[1];
+      const user = await this.getUserFromToken(authorizationHeader);
+      await this.userRepository.delete(user.id);
+    } catch (error) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  // Metodo auxiliar para obter usuário a partir do bearer token
+  private async getUserFromToken(authorizationHeader: string): Promise<User> {
+    try {
+      const token = authorizationHeader.split(' ')[1];
       const decoded = this.jwtService.decode(token);
       const user = await this.getUserById(decoded['sub']);
       return user;

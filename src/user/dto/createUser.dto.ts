@@ -1,16 +1,11 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'nome não pode estar vazio' })
   @MaxLength(120, { message: 'nome deve conter no máximo 120 caracteres' })
   name: string;
 
-  @IsEmail()
+  @IsEmail({}, {message: "deve ser um email válido"})
   @IsNotEmpty({ message: 'email não pode estar vazio' })
   @MaxLength(320, { message: 'email deve conter no máximo 320 caracteres' })
   email: string;

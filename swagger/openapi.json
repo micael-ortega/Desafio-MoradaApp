@@ -8,9 +8,7 @@
   "paths": {
     "/user": {
       "delete": {
-        "tags": [
-          "Usuários"
-        ],
+        "tags": ["Usuários"],
         "summary": "Deleta um usuário",
         "description": "O candidato deve criar uma rota capaz de deletar a conta de um usuário usando apenas o token de autenticação fornecido a ele",
         "operationId": "deleteUser",
@@ -36,9 +34,7 @@
         ]
       },
       "get": {
-        "tags": [
-          "Usuários"
-        ],
+        "tags": ["Usuários"],
         "summary": "Lê os dados do usuário",
         "description": "O candidato deve criar uma rota capaz de ler os dados do usuário já autenticado e retornar no body",
         "operationId": "getUser",
@@ -71,9 +67,7 @@
         ]
       },
       "patch": {
-        "tags": [
-          "Usuários"
-        ],
+        "tags": ["Usuários"],
         "summary": "Atualiza os dados não sensiveis do usuário",
         "description": "O candidato deve criar uma rota dedicada a atualizar os dados dos usuários",
         "requestBody": {
@@ -117,9 +111,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "Usuários"
-        ],
+        "tags": ["Usuários"],
         "summary": "Cria um usuário",
         "description": "O candidato deve criar uma rota dedicada a criar novos usuário utilizando os campos de name, email, password e description",
         "operationId": "postUser",
@@ -168,9 +160,7 @@
     },
     "/user/login": {
       "post": {
-        "tags": [
-          "Usuários"
-        ],
+        "tags": ["Usuários"],
         "summary": "Conecta o usuário a sua conta",
         "description": "O candidato deve criar uma rota dedicada a conectar os usuários a sua conta usando seu email e senha",
         "operationId": "loginUser",

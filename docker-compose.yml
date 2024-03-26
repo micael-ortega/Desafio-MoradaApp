@@ -9,7 +9,7 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=123
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   api:
     build:
@@ -20,5 +20,6 @@ services:
       - db
     volumes:
       - .:/app
+      - /home/micael/workspace/typescript/src/MoradaApp.backend.testeTecnico/node_modules
     ports:
-      - "3000:3000"
+      - '3000:3000'

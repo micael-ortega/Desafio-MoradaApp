@@ -20,6 +20,6 @@ services:
       - db
     volumes:
       - .:/app
-      - /home/micael/workspace/typescript/src/MoradaApp.backend.testeTecnico/node_modules
+      - ${pwd}/node_modules
     ports:
       - '3000:3000'

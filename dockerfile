@@ -1,13 +1,23 @@
-FROM node
+FROM node:20-alpine AS development
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 
-RUN npm install
+RUN npm ci
 
-COPY . .
+COPY --chown=node:node . .
 
 RUN npm run build
 
+USER node
+
 CMD ["npm", "run", "start:dev"]
+
+FROM node:20-alpine AS production
+
+RUN npm ci --only=production
+
+COPY --chown=node:node . .
+
+CMD [ "npm", "start" ]

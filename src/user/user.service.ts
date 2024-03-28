@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/patchUser.dto';
 import { GetUserDto } from './dto/getUser.dto';
+import { jwtConstants } from '../../constants';
 
 @Injectable()
 export class UserService {
@@ -15,7 +16,7 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async createUser(
     createUserDto: CreateUserDto,
@@ -95,6 +96,9 @@ export class UserService {
   private async getUserFromToken(authorizationHeader: string): Promise<User> {
     try {
       const token = authorizationHeader.split(' ')[1];
+      
+      if(!this.isTokenValid(token)) throw new UnauthorizedException()
+      
       const decoded = this.jwtService.decode(token);
       const user = await this.getUserById(decoded['sub']);
       return user;
@@ -103,6 +107,17 @@ export class UserService {
     }
   }
 
+  // Metodo auxiliar para validar autenticação do token
+  private isTokenValid(authorizationHeader: string): boolean {
+    try {
+      const decoded = this.jwtService.verify(authorizationHeader, {secret: jwtConstants.secret});
+      console.log(decoded)
+      return true
+    } catch(err) {
+      console.error(err)
+      return false
+    }
+  }
   // Metodo auxiliar para obter usuário a partir da Id
   private async getUserById(id: string): Promise<User> {
     return await this.userRepository.findOneBy({ id: id });

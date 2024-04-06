@@ -197,6 +197,7 @@ describe('UserService', () => {
       const decoded = { sub: user.id };
 
       jest.spyOn(jwtService, 'decode').mockReturnValue(decoded);
+      jest.spyOn(userService, 'isTokenValid').mockReturnValue(true);
       jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
 
       const response = await userService.getUserFromToken(authorization);

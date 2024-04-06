@@ -4,11 +4,17 @@
 
 O arquivo docker-compose.yml na raiz do projeto se encarrega de toda inicialização do projeto:
 
+```
 git clone https://github.com/micael-ortega/Desafio-MoradaApp
+```
 
+```
 cd Desafio-MoradaApp
+```
 
-docker compose up -d
+```
+docker compose up  api-prod -d
+```
 
 ## Requisitos obrigatórios
 

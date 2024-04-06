@@ -307,18 +307,6 @@
       "resPostUser": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "John Doe"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "johndoe@email.com"
-          },
-          "password": {
-            "type": "string"
-          },
           "accessToken": {
             "type": "string"
           }

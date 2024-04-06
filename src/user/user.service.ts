@@ -64,7 +64,6 @@ export class UserService {
       response.email = user.email;
       return response;
     } catch (error) {
-      console.error('error: ', error);
       throw new UnauthorizedException();
     }
   }
@@ -90,9 +89,12 @@ export class UserService {
 
   // Metodo auxiliar para obter usuário a partir do bearer token
   async getUserFromToken(authorizationHeader: string): Promise<User> {
+    const token = authorizationHeader.split(' ')[1];
+    const decoded = this.jwtService.decode(token);
+    if (!this.isTokenValid(token)) {
+      throw new UnauthorizedException();
+    }
     try {
-      const token = authorizationHeader.split(' ')[1];
-      const decoded = this.jwtService.decode(token);
       const user = await this.getUserById(decoded.sub);
       if (!user) {
         throw new UnauthorizedException();
@@ -105,10 +107,9 @@ export class UserService {
   }
 
   // Metodo auxiliar para validação do token
-  isTokenValid(authorizationHeader: string): boolean {
+  isTokenValid(token: string): boolean {
     try {
-      const token = authorizationHeader.split(' ')[1];
-      this.jwtService.verify(token, { secret: jwtConstants.secret });
+      this.jwtService.verify(token, {secret: jwtConstants.secret, ignoreExpiration: false});
       return true;
     } catch (error) {
       return false;

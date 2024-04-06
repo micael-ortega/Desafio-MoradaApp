@@ -38,7 +38,8 @@ export class UserController {
 
   @Get()
   async getUserInfo(@Headers('authorization') authorization: string) {
-    return this.userService.getUserInfo(authorization);
+    const user= await this.userService.getUserFromToken(authorization);
+    return this.userService.getUserInfo(user.id);
   }
 
   @Patch()
@@ -46,7 +47,9 @@ export class UserController {
     @Headers('authorization') authorization: string,
     @Body() updateuserDto: UpdateUserDto,
   ) {
-    return await this.userService.patchUserInfo(authorization, updateuserDto);
+    const user= await this.userService.getUserFromToken(authorization);
+
+    return await this.userService.patchUserInfo(user.id, updateuserDto);
   }
 
   @Delete()

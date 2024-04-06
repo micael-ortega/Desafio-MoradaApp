@@ -11,15 +11,27 @@ services:
     ports:
       - '5432:5432'
 
-  api:
+  api-dev:
     build:
       context: .
       dockerfile: dockerfile
-    image: micaelortega/morada-app-api
+      target: development
+    image: micaelortega/morada-app-api:dev
     depends_on:
       - db
     volumes:
       - .:/app
       - ${pwd}/node_modules
+    ports:
+      - '5000:3000'
+
+  api-prod:
+    build:
+      context: .
+      dockerfile: dockerfile
+      target: production
+    image: micaelortega/morada-app-api
+    depends_on:
+      - db
     ports:
       - '3000:3000'

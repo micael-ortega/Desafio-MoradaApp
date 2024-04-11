@@ -8,12 +8,12 @@ import { ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: process?.env.DB_TYPE as any || 'postgres' ,
-      host: process?.env.DB_HOST as any || 'localhost',
-      port: process?.env.DB_PORT as any || 5432,
-      username: process?.env.DB_USERNAME as any|| 'admin',
-      password: process?.env.DB_PASSWORD as any || '123',
-      database: process?.env.DB_NAME as any || 'moradaDb',
+      type: process.env.DB_TYPE as any ,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT  as any,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [User],
       synchronize: true,
     }),

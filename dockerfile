@@ -35,7 +35,6 @@ COPY --from=builder --chown=node:node /home/node/package*.json ./
 COPY --from=builder --chown=node:node /home/node/node_modules ./node_modules
 COPY --from=builder --chown=node:node /home/node/dist ./dist
 
-COPY --chown=node:node . .
+COPY ./.env ./
 
-
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "dist/main.js"]

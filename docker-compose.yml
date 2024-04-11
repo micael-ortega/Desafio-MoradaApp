@@ -1,37 +1,57 @@
-version: '3.9'
-
 services:
   db:
     image: postgres
+    container_name: morada-app-db
     restart: always
     environment:
-      - POSTGRES_DB=moradaDb
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - '5432:5432'
-
-  api-dev:
-    build:
-      context: .
-      dockerfile: dockerfile
-      target: development
-    image: micaelortega/morada-app-api:dev
-    depends_on:
-      - db
-    volumes:
-      - .:/app
-      - ${pwd}/node_modules
-    ports:
-      - '5000:3000'
-
-  api-prod:
+    env_file:
+      - .env
+    
+  api-prod: &api
     build:
       context: .
       dockerfile: dockerfile
       target: production
     image: micaelortega/morada-app-api
+    container_name: morada-app-api
     depends_on:
       - db
     ports:
       - '3000:3000'
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_PORT=${DB_PORT}
+    env_file:
+      - .env
+    restart: on-failure
+
+
+  api-dev:
+    <<: *api
+    build:
+      context: .
+      dockerfile: dockerfile
+      target: development
+    image: micaelortega/morada-app-api:dev
+    container_name: morada-app-dev
+
+    volumes:
+      - .:/home/node
+    ports:
+      - '5000:3000'
+   
+
+
+
+
+    

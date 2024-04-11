@@ -24,7 +24,6 @@ export class UserService {
     try {
       const plainPassword = createUserDto.password;
       createUserDto.password = await this.cryptService.hashPassword(createUserDto.password);
-
       await this.userRepository.save(createUserDto);
 
       const response = new CreateUserResponseDto();

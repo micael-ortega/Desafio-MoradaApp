@@ -11,9 +11,9 @@ import { CryptModule } from 'src/addon/crypt.module';
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET,
+      secret: process?.env.JWT_SECRET || "secret",
       signOptions: {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+        expiresIn: process?.env.JWT_EXPIRES_IN || "3600s",
       },
     }),
     CryptModule,

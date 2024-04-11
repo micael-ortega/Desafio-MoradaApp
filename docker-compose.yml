@@ -44,9 +44,9 @@ services:
       target: development
     image: micaelortega/morada-app-api:dev
     container_name: morada-app-dev
-
     volumes:
-      - .:/home/node
+      - ./src:/home/node/src
+    command: npm run start:dev
     ports:
       - '5000:3000'
    

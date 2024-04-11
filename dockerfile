@@ -3,14 +3,13 @@ FROM node:20-alpine AS development
 USER node
 WORKDIR /home/node
 
-COPY --chown=node:node package*.json ./
+COPY package*.json ./
 
 RUN npm ci
 
 COPY --chown=node:node . .
 
 CMD ["npm", "run", "start:dev"]
-
 
 FROM node:20-alpine AS builder
 

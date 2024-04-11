@@ -4,10 +4,9 @@ import {
   Delete,
   Get,
   Headers,
-  HttpStatus,
+  HttpCode,
   Patch,
   Post,
-  Res,
   UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -15,7 +14,6 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { UserValidationPipe } from './validation-pipe/user-validation-pipe';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { UpdateUserDto } from './dto/patchUser.dto';
-import { Response } from 'express';
 
 @Controller('/user')
 export class UserController {
@@ -51,13 +49,14 @@ export class UserController {
     return await this.userService.patchUserInfo(user.id, updateuserDto);
   }
 
+  // Retorna o no content como status
+  @HttpCode(204)
   @Delete()
   async deleteUser(
     @Headers('authorization') authorization: string,
-    @Res() res: Response,
+
   ) {
     const user = await this.userService.getUserFromToken(authorization);
-    await this.userService.deleteUser(user.id);
-    res.status(HttpStatus.NO_CONTENT).json([]);
+    return await this.userService.deleteUser(user.id);
   }
 }

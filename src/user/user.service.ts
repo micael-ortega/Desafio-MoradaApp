@@ -1,14 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/createUser.dto';
 import { CreateUserResponseDto } from './dto/createUser.response.dto';
-import { compareSync, hash } from 'bcrypt';
 import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/patchUser.dto';
 import { GetUserDto } from './dto/getUser.dto';
-import { jwtConstants } from '../../constants';
+import { Crypt } from 'src/addon/crypt';
 
 @Injectable()
 export class UserService {
@@ -16,6 +15,7 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    private cryptService: Crypt,
   ) {}
 
   async createUser(
@@ -23,7 +23,7 @@ export class UserService {
   ): Promise<CreateUserResponseDto> {
     try {
       const plainPassword = createUserDto.password;
-      createUserDto.password = await hash(createUserDto.password, 10);
+      createUserDto.password = await this.cryptService.hashPassword(createUserDto.password);
 
       await this.userRepository.save(createUserDto);
 
@@ -49,10 +49,14 @@ export class UserService {
     }
 
     const payload = { sub: user.id };
-    const token = await this.jwtService.signAsync(payload);
-    return {
-      accessToken: token,
-    };
+    try {
+      const token = await this.jwtService.signAsync(payload);
+      return {
+        accessToken: token,
+      };
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async getUserInfo(userId: string): Promise<GetUserDto> {
@@ -89,7 +93,8 @@ export class UserService {
 
   // Metodo auxiliar para obter usuário a partir do bearer token
   async getUserFromToken(authorizationHeader: string): Promise<User> {
-    const token = authorizationHeader.split(' ')[1];
+    console.log("authorizationHeader", authorizationHeader);
+    const token = authorizationHeader?.split(' ')[1];
     const decoded = this.jwtService.decode(token);
     if (!this.isTokenValid(token)) {
       throw new UnauthorizedException();
@@ -109,9 +114,14 @@ export class UserService {
   // Metodo auxiliar para validação do token
   isTokenValid(token: string): boolean {
     try {
-      this.jwtService.verify(token, {secret: jwtConstants.secret, ignoreExpiration: false});
+      this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+        ignoreExpiration: false,
+      });
       return true;
     } catch (error) {
+      console.log('Error validating token', token);
+      console.error(error);
       return false;
     }
   }
@@ -130,6 +140,6 @@ export class UserService {
   // Metodo auxiliar para verificar se a senha e o hash armazenado na
   // database está valido
   isPasswordCorrect(password: string, hash: string): boolean {
-    return compareSync(password, hash);
+    return this.cryptService.comparePassword(password, hash);
   }
 }
